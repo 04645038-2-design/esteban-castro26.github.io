@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="es" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Torneo Deportivo</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="/_sdk/data_sdk.js"></script>
+    <script src="/_sdk/element_sdk.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="h-full gradient-bg text-white overflow-hidden">
+    <div id="app" class="w-full h-full overflow-auto flex flex-col">
+        
+        <header class="sticky top-0 z-40 card-glass border-b border-white/10">
+            <div class="max-w-6xl mx-auto w-full px-4 py-4">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-3">
+                        <div class="text-3xl">⚽</div>
+                        <div>
+                            <h1 id="tournament-title" class="text-xl font-bold">Torneo Deportivo Tercer Ciclo</h1>
+                            <p class="text-xs text-gray-400">Sistema de Marcadores</p>
+                        </div>
+                    </div>
+                    <button id="admin-btn" class="p-2 hover:bg-white/10 rounded-lg transition-colors" title="Administrador">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <div id="login-modal" class="fixed inset-0 z-50 hidden modal-overlay flex items-center justify-center p-4">
+            <div class="card-glass rounded-2xl p-8 w-full max-w-sm fade-in">
+                <h2 class="text-2xl font-bold mb-6 text-center">🔑 Panel Admin</h2>
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-sm text-gray-300 mb-2">Contraseña</label>
+                        <input type="password" id="login-password" class="w-full px-4 py-3 rounded-lg bg-white/10 border border-white/20 focus:border-pink-500 focus:outline-none text-white" placeholder="Ingresa la contraseña">
+                    </div>
+                    <div id="login-error" class="text-red-400 text-sm p-2 rounded bg-red-500/10 hidden">❌ Contraseña incorrecta</div>
+                    <div class="flex gap-3">
+                        <button id="login-cancel" class="flex-1 px-4 py-3 rounded-lg bg-white/10 hover:bg-white/20 transition-colors font-medium">Cancelar</button>
+                        <button id="login-submit" class="flex-1 px-4 py-3 rounded-lg btn-primary font-medium text-white">Ingresar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <nav class="max-w-6xl mx-auto w-full px-4 py-4">
+            <div class="flex flex-wrap gap-2 card-glass rounded-xl p-2">
+                <button class="tab-btn px-4 py-2 rounded-lg font-medium transition-all tab-active" data-tab="matches">📅 Partidos</button>
+                <button class="tab-btn px-4 py-2 rounded-lg font-medium transition-all hover:bg-white/10" data-tab="standings">🏆 Posiciones</button>
+                <button class="tab-btn px-4 py-2 rounded-lg font-medium transition-all hover:bg-white/10" data-tab="scorers">⚽ Goleadores</button>
+                <button class="tab-btn px-4 py-2 rounded-lg font-medium transition-all hover:bg-white/10" data-tab="stats">📊 Estadísticas</button>
+                <button id="admin-tab" class="tab-btn px-4 py-2 rounded-lg font-medium transition-all hidden" data-tab="admin">⚙️ Admin</button>
+            </div>
+        </nav>
+
+        <main class="flex-1 max-w-6xl mx-auto w-full px-4 py-6">
+            <section id="matches-section" class="space-y-4">
+                <div id="matches-container" class="space-y-4">
+                    <div class="card-glass rounded-xl p-8 text-center text-gray-400"><p>No hay partidos aún</p></div>
+                </div>
+            </section>
+
+            <section id="standings-section" class="hidden">
+                <div class="card-glass rounded-xl overflow-hidden">
+                    <div class="p-4 border-b border-white/10"><h2 class="text-lg font-bold">🏆 Tabla de Posiciones</h2></div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-sm">
+                            <thead>
+                                <tr class="bg-white/5 border-b border-white/10 text-gray-400 text-xs">
+                                    <th class="px-4 py-3 text-left">#</th>
+                                    <th class="px-4 py-3 text-left">Equipo</th>
+                                    <th class="px-4 py-3 text-center">PJ</th>
+                                    <th class="px-4 py-3 text-center">G</th>
+                                    <th class="px-4 py-3 text-center">E</th>
+                                    <th class="px-4 py-3 text-center">P</th>
+                                    <th class="px-4 py-3 text-center">GF</th>
+                                    <th class="px-4 py-3 text-center">GC</th>
+                                    <th class="px-4 py-3 text-center">DG</th>
+                                    <th class="px-4 py-3 text-center font-bold">PTS</th>
+                                </tr>
+                            </thead>
+                            <tbody id="standings-body"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <section id="scorers-section" class="hidden space-y-4">
+                <div id="scorers-container" class="space-y-3"></div>
+            </section>
+
+            <section id="stats-section" class="hidden space-y-6">
+                <div class="grid md:grid-cols-4 gap-4">
+                    <div class="card-glass rounded-xl p-6 text-center">
+                        <p class="text-gray-400 text-sm mb-2">Partidos</p>
+                        <p class="text-3xl font-bold" id="stat-matches">0</p>
+                    </div>
+                    <div class="card-glass rounded-xl p-6 text-center">
+                        <p class="text-gray-400 text-sm mb-2">Goles</p>
+                        <p class="text-3xl font-bold text-pink-400" id="stat-goals">0</p>
+                    </div>
+                    </div>
+                <div class="grid md:grid-cols-3 gap-6" id="top-stats-grid">
+                    <div class="card-glass rounded-xl p-6">
+                        <h3 class="text-lg font-bold mb-4">🌟 Goleador del Torneo</h3>
+                        <div id="top-scorer-container" class="text-center py-8 text-gray-400"></div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="admin-section" class="hidden space-y-6">
+                <div class="flex flex-wrap gap-2 mb-6">
+                    <button class="admin-tab-btn px-4 py-2 rounded-lg bg-pink-500/20 border border-pink-500 text-pink-400 font-medium" data-admin-tab="live">⚡ En Vivo</button>
+                    <button class="admin-tab-btn px-4 py-2 rounded-lg bg-white/10 hover:bg-white/20 font-medium" data-admin-tab="teams">👥 Equipos</button>
+                    <button id="logout-btn" class="ml-auto px-4 py-2 rounded-lg bg-red-500/20 border border-red-500 text-red-400 font-medium">Cerrar Sesión</button>
+                </div>
+                </section>
+        </main>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
